@@ -132,8 +132,6 @@ def venues():
     }
     print(record)
     data.append(record)
-
-
     
   return render_template('pages/venues.html', areas=data);
 
