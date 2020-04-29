@@ -40,7 +40,8 @@ class Venue(db.Model):
     facebook_link = db.Column(db.String(120))
 
     def get_venues(self, city, state):
-        venues=list(map(lambda x : {'id': x.id, 'name': x.name, 'num_upcoming_shows': 3}, self.query.filter(self.city==city, self.state==state).all()))
+        venues=list(map(lambda x : {'id': x.id, 'name': x.name, 'num_upcoming_shows': 3}, self.query.filter(self.city==city, self.state==state).all()))[0]
+        venues=[{'id':x.id,'name':x.name,'num_upcoming_shows':3} for x in self.query.filter(self.city==city, self.state==state).all()]
         return venues
 
     def __repr__(self):
@@ -124,16 +125,13 @@ def venues():
   areas = Venue.query.distinct('city','state').all()
   data = []
   for area in areas:
-    venues = Venue.query.filter(Venue.city == area.city, Venue.state == area.state).all()
     record = {
         'city': area.city,
         'state': area.state,        
-        'venues': [venue.get_venues(area.city, area.state) for venue in venues]
-    }
+        'venues': Venue.get_venues(Venue, area.city, area.state)
+    }    
     print(record)
     data.append(record)
-
-
     
   return render_template('pages/venues.html', areas=data);
 
